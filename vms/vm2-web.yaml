@@ -50,4 +50,4 @@ spec:
                 - sleep 20
                 # On télécharge et on lance ton script d'installation Web depuis GitHub
                 # REMPLACE L'URL CI-DESSOUS PAR TON URL RAW GITHUB
-                - curl -s https://raw.githubusercontent.com/TON_USER/REPO/main/scripts/install-nginx-node.sh | bash
+                - curl -s https://raw.githubusercontent.com/Aissatou-Diagne-Uadb/projet-openshift-3tiers/main/scripts/install-nginx-node.sh | bash
