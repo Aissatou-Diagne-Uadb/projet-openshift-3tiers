@@ -1,0 +1,53 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm2-web
+  namespace: aichared-dev
+spec:
+  runStrategy: Manual
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: vm2-web
+    spec:
+      domain:
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 300m
+        devices:
+          interfaces:
+            - name: default
+              masquerade: {}
+          disks:
+            - name: containerdisk
+              disk:
+                bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/containerdisks/ubuntu:22.04
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              user: ubuntu
+              password: "Password2026!"
+              chpasswd: { expire: False }
+              package_update: true
+              packages:
+                - nginx
+                - nodejs
+                - npm
+                - curl
+              runcmd:
+                - sleep 20
+                # On télécharge et on lance ton script d'installation Web depuis GitHub
+                # REMPLACE L'URL CI-DESSOUS PAR TON URL RAW GITHUB
+                - curl -s https://raw.githubusercontent.com/TON_USER/REPO/main/scripts/install-nginx-node.sh | bash

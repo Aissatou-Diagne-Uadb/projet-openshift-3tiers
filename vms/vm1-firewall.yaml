@@ -1,0 +1,52 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm1-firewall
+  namespace: aichared-dev
+spec:
+  runStrategy: Manual
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: vm1-firewall
+    spec:
+      domain:
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 500m
+        devices:
+          interfaces:
+            - name: default
+              masquerade: {}
+          disks:
+            - name: containerdisk
+              disk:
+                bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/containerdisks/ubuntu:22.04
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              user: ubuntu
+              password: "Password2026!"
+              chpasswd: { expire: False }
+              package_update: true
+              packages:
+                - iptables
+                - iptables-persistent
+                - curl
+              runcmd:
+                - sleep 20
+                # On télécharge et on lance ton script de firewall depuis GitHub
+                # REMPLACE L'URL CI-DESSOUS PAR TON URL RAW GITHUB
+                - curl -s https://raw.githubusercontent.com/TON_USER/REPO/main/scripts/firewall-rules.sh | bash
