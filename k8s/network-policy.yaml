@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: deny-web-to-db
+  name: allow-mysql-from-vm2-only
   namespace: aichared-dev
 spec:
   podSelector:
@@ -13,4 +13,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          kubevirt.io/domain: vm1-firewall # Autorise SEULEMENT le firewall
+          kubevirt.io/domain: vm2-web # Autorise UNIQUEMENT la VM2
+    ports:
+    - protocol: TCP
+      port: 3306
